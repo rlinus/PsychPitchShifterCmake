@@ -28,7 +28,7 @@ install(TARGETS PrintDeviceList)
 
 ## PitchLoop
 matlab_add_mex(NAME PitchLoop SRC "PitchLoop.cpp" "cpvPitchShift.cpp" "smbPitchShift.cpp")
-target_include_directories(PitchLoop PRIVATE ${rtaudio_INCLUDE_DIR} ${rubberband_INCLUDE_DIR})
+target_include_directories(PitchLoop PRIVATE ${rtaudio_INCLUDE_DIR} ${rubberband_INCLUDE_DIR} ${stk_INCLUDE_DIR})
 #target_link_libraries(PitchLoop unofficial::libstk::libstk)
 target_link_libraries(PitchLoop libstk)
 target_link_libraries(PitchLoop rtaudio)
@@ -44,7 +44,7 @@ install(TARGETS PitchLoop)
 
 ## PsychPitchShifter
 matlab_add_mex(NAME PsychPitchShifter SRC "PsychPitchShifter.cpp" "cpvPitchShift.cpp" "smbPitchShift.cpp" "dywapitchtrack.c")
-target_include_directories(PsychPitchShifter PRIVATE ${rtaudio_INCLUDE_DIR} ${rubberband_INCLUDE_DIR})
+target_include_directories(PsychPitchShifter PRIVATE ${rtaudio_INCLUDE_DIR} ${rubberband_INCLUDE_DIR} ${stk_INCLUDE_DIR})
 #target_link_libraries(PsychPitchShifter unofficial::libstk::libstk)
 target_link_libraries(PsychPitchShifter libstk)
 target_link_libraries(PsychPitchShifter rtaudio)
@@ -58,3 +58,7 @@ set_property(TARGET PsychPitchShifter PROPERTY LINK_FLAGS "/EXPORT:mexFunction /
 
 install(TARGETS PsychPitchShifter)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/fftw3.dll DESTINATION bin)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/PsychPitchShifter.m DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/PitchLoop.m DESTINATION bin)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/PrintDeviceList.m DESTINATION bin)

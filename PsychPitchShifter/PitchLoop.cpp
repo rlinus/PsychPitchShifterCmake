@@ -3,7 +3,7 @@
 #include <string>
 #include <math.h>
 #include <mex.h>
-#include <stk/Stk.h>
+#include <Stk.h>
 #include <RtAudio.h>
 #include <memory>
 

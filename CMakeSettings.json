@@ -63,6 +63,11 @@
           "name": "RTAUDIO_API_ASIO",
           "value": "True",
           "type": "BOOL"
+        },
+        {
+          "name": "RTAUDIO_API_DS",
+          "value": "False",
+          "type": "BOOL"
         }
       ]
     }

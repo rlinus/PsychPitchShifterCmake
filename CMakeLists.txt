@@ -16,6 +16,7 @@ add_subdirectory ("rubberband-cmake")
 
 set(rtaudio_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/rtaudio-master")
 set(rubberband_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/rubberband-cmake/rubberband")
+set(stk_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/stk-master/include")
 add_subdirectory ("PsychPitchShifter")
 
 
