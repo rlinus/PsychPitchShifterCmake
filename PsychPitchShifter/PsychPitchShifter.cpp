@@ -166,6 +166,8 @@ double volume_normalization_delta = 0;
 
 int rubberbandFramesRequired = 0;
 
+volatile double signal_power = 0.0;
+
 void init(void){
     Stk::setSampleRate(sampleRate);
     Stk::setRawwavePath(get_mex_path()+"rawwaves/");
@@ -392,14 +394,17 @@ int tick( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
 
     memcpy(&output_signal[i_frame*frameSize],output,frameSize*sizeof(double));
     
+
+    signal_power = sig_power();
+
         
     for (int i=0; i<frameSize; i++ ){  
             double out = feedback_gain*output_signal[i_frame*frameSize+i];
             if(add_pink_noise && (!play_ref_sound || i_frame > ref_sound_duration_f)){
                 if(adaptive_noise_level){
-                    out += pink_noise[(i_frame%num_noise_frames)*frameSize+i]*min(max(sig_power(),min_noise_level),max_noise_level);
+                    out += pink_noise[(i_frame%num_noise_frames)*frameSize+i]*min(max(signal_power* noise_gain,min_noise_level),max_noise_level);
                 }else{
-                    out += pink_noise[(i_frame%num_noise_frames)*frameSize+i];
+                    out += noise_gain*pink_noise[(i_frame%num_noise_frames)*frameSize+i];
                 }
             }
             if(play_ref_sound && (i_frame < ref_sound_duration_f || ref_sound_always_on)){
@@ -529,6 +534,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
         } else if(v1==0){
 			//get stream status
             plhs[0] = mxCreateDoubleScalar(is_finished);
+
+            if (nlhs > 1) plhs[1] = mxCreateDoubleScalar(signal_power);
             return;
         } else {
 			//init and start stream
@@ -747,18 +754,18 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
             fieldptr = mxGetField(prhs[1], 0, "min_noise_lvl");
             if(fieldptr){
-                min_noise_level = double(mxGetScalar(fieldptr))/noise_gain;
+                min_noise_level = double(mxGetScalar(fieldptr));
                 if(min_noise_level<0) min_noise_level=0;
             }else{
-                min_noise_level = 0.005/noise_gain;
+                min_noise_level = 0.005;
             }
             
             fieldptr = mxGetField(prhs[1], 0, "max_noise_lvl");
             if(fieldptr){
-                max_noise_level = double(mxGetScalar(fieldptr))/noise_gain;
+                max_noise_level = double(mxGetScalar(fieldptr));
                 if(max_noise_level<min_noise_level) max_noise_level=min_noise_level;
             }else{
-                max_noise_level = 0.05/noise_gain;
+                max_noise_level = 0.05;
             }
             
             fieldptr = mxGetField(prhs[1], 0, "start_threshold");
@@ -766,7 +773,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
                 start_threshold = double(mxGetScalar(fieldptr));
                 if(start_threshold<0) start_threshold=0;
             }else{
-                max_noise_level = 0.01;
+                start_threshold = 0.01;
             }
             
             fieldptr = mxGetField(prhs[1], 0, "stop_threshold");
@@ -856,7 +863,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
                 //double *pink_noise_mp = (double*) mxGetData(pink_noise_m);
                 double *pink_noise_mp = mxGetPr(pink_noise_m);
                 for(int i=0; i < num_noise_frames*frameSize; ++i){
-                    pink_noise[i] = (double)(noise_gain * pink_noise_mp[i]);
+                    pink_noise[i] = (double)(pink_noise_mp[i]);
                 }
                 mxDestroyArray(pink_noise_m);
                 mxDestroyArray(num_samples_m);

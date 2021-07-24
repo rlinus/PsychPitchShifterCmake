@@ -116,8 +116,8 @@
 %                           neighbours. This usually results in a slightly
 %                           softer, phasier sound.
 %
-%   state = PsychPitchShifter(0):
-%       Returns a value according to the current state.
+%   [state, power] = PsychPitchShifter(0):
+%       state:  Returns a value according to the current state.
 %           0:  the function returns 0 till voc_duration seconds after the
 %               voice onset.
 %           1:  the function returns 1 after the end of the trial (which is
@@ -126,6 +126,8 @@
 %           2:  the function returns 2 after the end of the trial, if the
 %               voice amplitude has reached a value smaller than
 %               stop_threshold.
+%		power: mic signal power
+%
 %
 %   [x,y,voice_on,stc_pf,var_pf,ctrl_pf,dpitch] = PsychPitchShifter(-1):
 %       Stops the audio recording and playback and returns the data.
